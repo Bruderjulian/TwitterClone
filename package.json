@@ -1,0 +1,9 @@
+{
+  "name": "twitter-clone",
+  "version": "1.0.0",
+  "description": "This project is a WebSocket-based Twitter clone",
+  "main": "index.js",
+  "scripts": {},
+  "author": "BruderJulian, Bretolino",
+  "license": "MIT"
+}
