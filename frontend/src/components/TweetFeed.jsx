@@ -9,7 +9,7 @@ export default function TweetFeed() {
 
   useEffect(() => {
     // Load existing tweets
-    fetch(url+ "/tweets")
+    fetch(url + "/tweets")
       .then((res) => res.json())
       .then(setTweets);
 
@@ -18,36 +18,49 @@ export default function TweetFeed() {
       setTweets((prev) => [tweet, ...prev]);
     });
 
-    return () => socket.off("tweet-posted");
+    // Cleanup
+    return () => {
+      socket.off("tweet-posted");
+    };
   }, []);
 
+  function sendTweet() {
+    // Get tweet text
+    const tweetText = document.getElementById("tweet_text").value;
+    if (!tweetText || tweetText == "") return;
+
+    //Send tweet
+    const tweet = {
+      text: tweetText,
+      timestamp: Date.now(),
+    };
+    socket.emit("new-tweet", tweet);
+
+    //Clear textarea
+    document.getElementById("tweet_text").value = "";
+  }
+
   return (
-    <div>
+    <>
       <h2>Live Tweets</h2>
-      <textarea name="tweet_text" id="tweet_text"></textarea>
+      <textarea
+        name="tweet_text"
+        id="tweet_text"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            sendTweet();
+          }
+        }}
+      ></textarea>
       <br />
       <button onClick={sendTweet}>Send Tweet</button>
-      {tweets.map((tweet) => (
-        <div>
+      {tweets.map((tweet, i) => (
+        <div key={"tweet_" + i} className="tweet">
           <p>Text: {tweet.text}</p>
           <small>Date: {new Date(tweet.timestamp).toLocaleString()}</small>
         </div>
       ))}
-    </div>
+    </>
   );
-}
-
-function sendTweet() {
-  const tweetText = document.getElementById("tweet_text").value;
-  if (!tweetText) return;
-
-  //Send tweet
-  const tweet = {
-    text: tweetText,
-    timestamp: Date.now(),
-  };
-  socket.emit("new-tweet", tweet);
-
-  //Clear textarea
-  //document.getElementById("tweet_text").value = "";
 }

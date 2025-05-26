@@ -6,7 +6,7 @@ const db = new Database(config.db_path);
 // Create table if not exists
 db.prepare(`
   CREATE TABLE IF NOT EXISTS tweets (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT,
     timestamp INTEGER
   )
