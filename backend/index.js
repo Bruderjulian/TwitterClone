@@ -22,6 +22,7 @@ const io = new SocketIO.Server(server, {
 
 // REST route
 app.get("/tweets", (req, res) => {
+  logger.info("Fetching tweets");
   const tweets = db
     .prepare("SELECT * FROM tweets ORDER BY timestamp DESC")
     .all();
@@ -34,15 +35,15 @@ io.on("connection", (socket) => {
 
   socket.on("new-tweet", (tweet) => {
     console.log("New tweet received:", tweet);
-    const stmt = db.prepare(
-      "INSERT INTO tweets (text, timestamp) VALUES (?, ?)"
+    db.prepare("INSERT INTO tweets (text, timestamp) VALUES (?, ?)").run(
+      tweet.text,
+      tweet.timestamp
     );
-    stmt.run(tweet.text, tweet.timestamp);
 
     io.emit("tweet-posted", tweet); // broadcast to all
   });
 });
 
-server.listen(config.port, config.host, () => {
+server.listen(config.port, () => {
   logger.info("Server running on " + config.host + ":" + config.port);
 });

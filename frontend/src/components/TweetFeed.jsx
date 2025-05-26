@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3000");
+const url = "http://localhost:3000";
+const socket = io(url);
 
 export default function TweetFeed() {
   const [tweets, setTweets] = useState([]);
 
   useEffect(() => {
     // Load existing tweets
-    fetch("http://localhost:3000/tweets")
+    fetch(url+ "/tweets")
       .then((res) => res.json())
       .then(setTweets);
 
